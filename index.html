@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">◉</div>
+                <div>
+                    <h2>AirSense</h2>
+                    <span>Air Quality Monitor</span>
+                </div>
+            </div>
+
+            <div class="side-section">
+                <p class="side-label">MENU UTAMA</p>
+                <a class="side-link active" href="#">
+                    <span>◫</span> Dashboard
+                </a>
+                <a class="side-link" href="#pollutants">
+                    <span>◉</span> Polutan Udara
+                </a>
+                <a class="side-link" href="#chartSection">
+                    <span>⌁</span> Grafik Kualitas Udara
+                </a>
+                <a class="side-link" href="#forecastSection">
+                    <span>▦</span> Prediksi
+                </a>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="source-card">
+                    <span class="source-icon">ⓘ</span>
+                    <div>
+                        <strong>Sumber Data</strong>
+                        <p>Open-Meteo Air Quality API</p>
+                    </div>
+                </div>
+                <p class="sidebar-footer">AirSense Dashboard © 2026</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">AIR QUALITY MONITORING</p>
+                    <h1>Dashboard Kualitas Udara</h1>
+                    <p class="subtitle">Pantau kondisi kualitas udara di berbagai kota dunia.</p>
+                </div>
+
+                <div class="date-display">
+                    <span>◷</span>
+                    <p id="currentDate">Memuat tanggal...</p>
+                </div>
+            </header>
+
+            <section class="search-section">
+                <div class="search-heading">
+                    <div>
+                        <h2>Cari Lokasi</h2>
+                        <p>Masukkan nama kota yang ingin kamu pantau.</p>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <span class="search-icon">⌕</span>
+                    <input
+                        type="text"
+                        id="citySearch"
+                        list="citySuggestions"
+                        placeholder="Contoh: Medan, Tokyo, London, New York"
+                        autocomplete="off"
+                    >
+                    <datalist id="citySuggestions"></datalist>
+                    <button id="searchButton" type="button">Cari Kota</button>
+                </div>
+
+                <p id="statusMessage" class="status-message">
+                    Memuat data kualitas udara...
+                </p>
+            </section>
+
+            <section id="dashboardContent" class="dashboard-content" hidden>
+
+                <div class="location-heading">
+                    <div>
+                        <p class="eyebrow">LOKASI YANG DIPANTAU</p>
+                        <h2 id="locationTitle">Medan, Indonesia</h2>
+                    </div>
+                    <span class="live-badge">
+                        <span class="live-dot"></span>
+                        Data Terbaru
+                    </span>
+                </div>
+
+                <section class="overview-grid">
+                    <div class="aqi-card">
+                        <div class="card-heading">
+                            <div>
+                                <p class="card-label">INDEKS KUALITAS UDARA</p>
+                                <h3>Kondisi Saat Ini</h3>
+                            </div>
+                            <span class="info-icon">i</span>
+                        </div>
+
+                        <div class="aqi-content">
+                            <div class="aqi-ring" id="aqiCircle">
+                                <div class="aqi-ring-inner">
+                                    <span id="aqiValue">--</span>
+                                    <small>US AQI</small>
+                                </div>
+                            </div>
+
+                            <div class="aqi-information">
+                                <span id="aqiCategory" class="category-badge">Memuat...</span>
+                                <h2 id="aqiDescription">Menunggu data</h2>
+                                <p id="recommendationText">
+                                    Data kualitas udara sedang dimuat.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="recommendation">
+                            <span class="recommendation-icon">✦</span>
+                            <div>
+                                <strong id="recommendationTitle">Rekomendasi</strong>
+                                <p id="recommendationDetail">
+                                    Menunggu hasil pengukuran.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="card-heading">
+                            <div>
+                                <p class="card-label">INFORMASI</p>
+                                <h3>Ringkasan Kualitas Udara</h3>
+                            </div>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-dot blue"></span>
+                            <div>
+                                <p>Indeks Kualitas Udara</p>
+                                <strong id="summaryAqi">--</strong>
+                            </div>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-dot green"></span>
+                            <div>
+                                <p>PM2.5</p>
+                                <strong id="summaryPm25">-- µg/m³</strong>
+                            </div>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-dot orange"></span>
+                            <div>
+                                <p>PM10</p>
+                                <strong id="summaryPm10">-- µg/m³</strong>
+                            </div>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-dot purple"></span>
+                            <div>
+                                <p>Ozon (O₃)</p>
+                                <strong id="summaryO3">-- µg/m³</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="pollutants" class="section-block">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">PENGUKURAN</p>
+                            <h2>Kandungan Polutan Udara</h2>
+                            <p>Informasi konsentrasi zat pencemar di udara.</p>
+                        </div>
+                    </div>
+
+                    <div class="pollutant-grid">
+                        <div class="pollutant-card">
+                            <div class="pollutant-top">
+                                <span class="pollutant-symbol">PM</span>
+                                <span class="pollutant-name">PM2.5</span>
+                            </div>
+                            <h3 id="pm25">--</h3>
+                            <p>µg/m³</p>
+                            <span class="pollutant-description">Partikel halus</span>
+                        </div>
+
+                        <div class="pollutant-card">
+                            <div class="pollutant-top">
+                                <span class="pollutant-symbol">PM</span>
+                                <span class="pollutant-name">PM10</span>
+                            </div>
+                            <h3 id="pm10">--</h3>
+                            <p>µg/m³</p>
+                            <span class="pollutant-description">Partikel kasar</span>
+                        </div>
+
+                        <div class="pollutant-card">
+                            <div class="pollutant-top">
+                                <span class="pollutant-symbol">CO</span>
+                                <span class="pollutant-name">Karbon Monoksida</span>
+                            </div>
+                            <h3 id="co">--</h3>
+                            <p>µg/m³</p>
+                            <span class="pollutant-description">Gas karbon monoksida</span>
+                        </div>
+
+                        <div class="pollutant-card">
+                            <div class="pollutant-top">
+                                <span class="pollutant-symbol">NO₂</span>
+                                <span class="pollutant-name">Nitrogen Dioksida</span>
+                            </div>
+                            <h3 id="no2">--</h3>
+                            <p>µg/m³</p>
+                            <span class="pollutant-description">Gas nitrogen dioksida</span>
+                        </div>
+
+                        <div class="pollutant-card">
+                            <div class="pollutant-top">
+                                <span class="pollutant-symbol">SO₂</span>
+                                <span class="pollutant-name">Sulfur Dioksida</span>
+                            </div>
+                            <h3 id="so2">--</h3>
+                            <p>µg/m³</p>
+                            <span class="pollutant-description">Gas sulfur dioksida</span>
+                        </div>
+
+                        <div class="pollutant-card">
+                            <div class="pollutant-top">
+                                <span class="pollutant-symbol">O₃</span>
+                                <span class="pollutant-name">Ozon</span>
+                            </div>
+                            <h3 id="o3">--</h3>
+                            <p>µg/m³</p>
+                            <span class="pollutant-description">Gas ozon</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="chartSection" class="section-block">
+                    <div class="section-heading chart-heading">
+                        <div>
+                            <p class="eyebrow">ANALISIS DATA</p>
+                            <h2>Grafik Kualitas Udara</h2>
+                            <p>Perubahan konsentrasi PM2.5 dalam 24 jam.</p>
+                        </div>
+                        <div class="chart-current">
+                            <span>PM2.5 saat ini</span>
+                            <strong id="chartCurrentValue">-- µg/m³</strong>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-legend">
+                            <span class="legend-dot"></span>
+                            Konsentrasi PM2.5
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="airChart"></canvas>
+                        </div>
+                        <p id="chartUpdate" class="chart-update">
+                            Menunggu data grafik...
+                        </p>
+                    </div>
+
+                    <div class="chart-table-wrapper">
+                        <div class="table-heading">
+                            <div>
+                                <h3>Data PM2.5 per Jam</h3>
+                                <p>Data pengukuran selama 24 jam terakhir.</p>
+                            </div>
+                        </div>
+                        <div id="chartTable" class="chart-table">
+                            Data akan ditampilkan setelah grafik dimuat.
+                        </div>
+                    </div>
+                </section>
+
+                <section id="forecastSection" class="section-block">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">PERKIRAAN</p>
+                            <h2>Prediksi Kualitas Udara</h2>
+                            <p>Rata-rata konsentrasi PM2.5 untuk lima hari ke depan.</p>
+                        </div>
+                    </div>
+
+                    <div id="forecastGrid" class="forecast-grid"></div>
+                </section>
+
+                <footer class="main-footer">
+                    <p>AirSense — Dashboard Pemantauan Kualitas Udara</p>
+                    <p>Data disediakan oleh Open-Meteo Air Quality API.</p>
+                </footer>
+
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
